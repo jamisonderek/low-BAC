@@ -111,7 +111,7 @@ app.post('/webhook', async (req, res) => {
   }
 
   if (startVehicle) {
-    console.log('\n*** Sent message to FordConnet start vehicle. ***');
+    console.log('\n*** Sent message to FordConnect start vehicle. ***');
     const vehicleId = vehicle.toVehicleId('arduino-iot');
     const message = await actionWithCheck('start vehicle', vehicleId, fordConnect.doStartEngine, fordConnect.checkStartEngine);
     if (message !== 'Sent start vehicle command and got confirmation.') {

@@ -26,16 +26,15 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 /**
- * Prints the message to the console and sends a JSON response back to Alexa.
+ * Prints the message to the console.
  *
  * @param {*} res The response object.
  * @param {*} message The message to return.
- * @returns The JSON response.
+ * @returns The message.
  */
 function sendMessage(res, message) {
   console.log(message);
-  res.statusCode = 200;
-  return res.json({ status: message.startsWith('Fail') ? 'FAILED' : 'SUCCESS', msg: message });
+  return message;
 }
 
 /**

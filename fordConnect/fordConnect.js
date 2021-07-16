@@ -206,9 +206,6 @@ async function $retryGetWhilePending(options) {
       // Convert the body from a JSON string into an object.
       response.body = JSON.parse(response.body);
 
-      // TODO: Use a logging framework.
-      console.log(`command status was ${response.body.commandStatus}`);
-
       if (response.body.commandStatus !== 'PENDINGRESPONSE') {
         return response;
       }

@@ -26,36 +26,6 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 /**
- * Prints the message to the console.
- *
- * @param {*} res The response object.
- * @param {*} message The message to return.
- * @returns The message.
- */
-function sendMessage(res, message) {
-  console.log(message);
-  return message;
-}
-
-/**
- * Prints the name of the invoked intent. Ensures access token isnt expired. Returns the vehicleId
- * assoicated with the Alexa instance making the request.
- *
- * @param {*} req The request object.
- * @param {*} name The name of the intent being invoked.
- * @returns The vehicleId from the request.
- */
-async function startRequest(req, name) {
-  console.log(`\n${name} invoked.`);
-
-  // Make sure our access token is good for the duration of our calls (60 seconds).
-  await fordConnect.refreshToken(60);
-
-  // Return the vehicleId for this request.
-  return vehicle.toVehicleId(req.query.user);
-}
-
-/**
  * Invokes the doCommand and checkCommand (e.g. doStartEngine, checkStartEngine) and
  * returns a message about its success or failure.
  *
@@ -105,24 +75,6 @@ async function actionWithCheck(intent, vehicleId, doCommand, checkCommand) {
   return message;
 }
 
-/**
- * Invokes the doCommand and checkCommand (e.g. doStartEngine, checkStartEngine) and
- * returns a JSON message to Alexa about its success or failure.
- *
- * @param {*} req The request object.
- * @param {*} res The response object.
- * @param {*} intent The name of the intent being invoked.
- * @param {*} doCommand A function to invoke for doing command (e.g. doStartEngine)
- * @param {*} checkCommand A function to invoke for cheking the status (e.g. checkStartEngine)
- * @returns The JSON response indicating if the command was successful.
- */
-async function requestActionWithCheck(req, res, intent, doCommand, checkCommand) {
-  const vehicleId = await startRequest(req, intent);
-
-  return sendMessage(res,
-    await actionWithCheck(intent, vehicleId, doCommand, checkCommand));
-}
-
 // Update the token and gets the authorized vehicle.
 vehicle.init();
 
@@ -151,12 +103,20 @@ app.post('/webhook', async (req, res) => {
 
   if (doorLocks) {
     console.log('\n*** Sent message to FordConnect unlock doors. ***');
-    requestActionWithCheck(req, res, 'unlock vehicle', fordConnect.doUnlock, fordConnect.checkUnlock);
+    const vehicleId = vehicle.toVehicleId('arduino-iot');
+    const message = await actionWithCheck('unlock vehicle', vehicleId, fordConnect.doUnlock, fordConnect.checkUnlock);
+    if (message !== 'Sent unlock vehicle command and got confirmation.') {
+      console.log(message);
+    }
   }
 
   if (startVehicle) {
     console.log('\n*** Sent message to FordConnet start vehicle. ***');
-    requestActionWithCheck(req, res, 'start vehicle', fordConnect.doStartEngine, fordConnect.checkStartEngine);
+    const vehicleId = vehicle.toVehicleId('arduino-iot');
+    const message = await actionWithCheck('start vehicle', vehicleId, fordConnect.doStartEngine, fordConnect.checkStartEngine);
+    if (message !== 'Sent start vehicle command and got confirmation.') {
+      console.log(message);
+    }
   }
 
   res.statusCode = 200;

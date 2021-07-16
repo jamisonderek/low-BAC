@@ -65,10 +65,12 @@ async function init() {
  * @returns The vehicleId to use for the request.
  */
 function toVehicleId(userId) {
-  // TODO: Add mapping if we need to support multiple users.
   const { vehicleId } = activeVehicle;
 
-  console.log(`User ${userId} is using vehicle ${vehicleId}.`);
+  if (userId) {
+    // TODO: Add mapping if we need to support multiple users.
+  }
+
   return vehicleId;
 }
 

@@ -1,5 +1,5 @@
-/* eslint-disable camelcase */
 /* eslint-disable linebreak-style */
+/* eslint-disable camelcase */
 /* eslint-disable no-console */
 
 /**

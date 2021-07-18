@@ -21,7 +21,14 @@ This is an IoT project that helps ensure you have a low BAC (Blood Alcohol Conte
     - If the status is PENDINGRESPONSE then retry the GET call
     - Print the response
 
+## Parts list
+- [Arduino Nano 33 IoT](https://www.amazon.com/Arduino-Nano-33-IoT/dp/B07VW9TSKD)
+- [MQ-3 sensor](https://www.amazon.com/Alcohol-Detector-Double-Sided-Detection-Indicator/dp/B08HX2TTCN)
 
+To use the GSM network instead of WIFI we could use the following parts (but I don't own them so I haven't confirmed):
+- [Arduino MKR 1400](https://www.amazon.com/ARDUINO-MKR-1400-DIPOLE-Antenna/dp/B07CC4TTVC)
+- [Quad band antenna](https://www.amazon.com/Adafruit-Sticker-type-Cellular-Quad-Band-Antenna/dp/B00N4YMMTG)
+- [SIM card](https://store.arduino.cc/usa/sim-card) $1.50/month after 90 days.
 
 ## Wiring diagram
 <img src='./docs/wiring.png' />

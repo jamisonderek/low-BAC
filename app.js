@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable linebreak-style */
 /* eslint-disable no-console */
 
@@ -99,25 +100,14 @@ app.post('/webhook', asyncAppWrapper(async (req, res) => {
   console.log('\nwebhook invoked');
   const data = decodeObj(req.fields.data);
   const json = JSON.parse(data);
-  // eslint-disable-next-line camelcase
+
   const { webhook_id, thing_id, values } = json;
 
-  let doorLocks;
-  let startVehicle;
-
-  // eslint-disable-next-line camelcase
   console.log(`${webhook_id}.${thing_id} : `);
-  for (let i = 0; i < values.length; i += 1) {
-    console.log(`${values[i].name}: "${values[i].value}" @ ${values[i].updated_at}`);
-    if (values[i].name === 'doorLocks' && values[i].value === false) {
-      doorLocks = true;
-    }
 
-    if (values[i].name === 'startVehicle' && values[i].value === true) {
-      startVehicle = true;
-    }
-  }
+  values.map((v) => console.log(`${v.name}: "${v.value}" @ ${v.updated_at}`));
 
+  const doorLocks = values.find((v) => v.name === 'doorLocks' && v.value === false) !== undefined;
   if (doorLocks) {
     console.log('\n*** Sent message to FordConnect unlock doors. ***');
     const vehicleId = vehicle.toVehicleId('arduino-iot');
@@ -125,6 +115,7 @@ app.post('/webhook', asyncAppWrapper(async (req, res) => {
     console.log(message);
   }
 
+  const startVehicle = values.find((v) => v.name === 'startVehicle' && v.value === true) !== undefined;
   if (startVehicle) {
     console.log('\n*** Sent message to FordConnect start vehicle. ***');
     const vehicleId = vehicle.toVehicleId('arduino-iot');

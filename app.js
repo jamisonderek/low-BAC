@@ -78,7 +78,24 @@ async function actionWithCheck(intent, vehicleId, doCommand, checkCommand) {
 // Update the token and gets the authorized vehicle.
 vehicle.init();
 
-app.post('/webhook', async (req, res) => {
+/**
+ * This is a wrapper for all of the async app calls, so exceptions get forwared on to the next
+ * handler.
+ *
+ * @param {*} fn the async function to wrap.
+ * @returns a wrapped function.
+ */
+function asyncAppWrapper(fn) {
+  if (process.env.NODE_ENV !== 'test') {
+    return (req, res, next) => {
+      fn(req, res, next).catch(next);
+    };
+  }
+
+  return (req, res, next) => { fn(req, res, next); };
+}
+
+app.post('/webhook', asyncAppWrapper(async (req, res) => {
   console.log('\nwebhook invoked');
   const data = decodeObj(req.fields.data);
   const json = JSON.parse(data);
@@ -121,4 +138,12 @@ app.post('/webhook', async (req, res) => {
 
   res.statusCode = 200;
   res.send('Message processed.');
+}));
+
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  // SECURITY: We are showing potentially user controlled data and potentially internal data.
+  // TODO: Replace with logging API and just return 'friendly message'.
+  res.status(500).send(`<pre>Unhandled error, please report the following stacktrace at https://github.com/jamisonderek/low-BAC/issues!\n\n${err.stack}</pre>`);
 });

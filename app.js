@@ -122,18 +122,14 @@ app.post('/webhook', asyncAppWrapper(async (req, res) => {
     console.log('\n*** Sent message to FordConnect unlock doors. ***');
     const vehicleId = vehicle.toVehicleId('arduino-iot');
     const message = await actionWithCheck('unlock vehicle', vehicleId, fordConnect.doUnlock, fordConnect.checkUnlock);
-    if (message !== 'Sent unlock vehicle command and got confirmation.') {
-      console.log(message);
-    }
+    console.log(message);
   }
 
   if (startVehicle) {
     console.log('\n*** Sent message to FordConnect start vehicle. ***');
     const vehicleId = vehicle.toVehicleId('arduino-iot');
     const message = await actionWithCheck('start vehicle', vehicleId, fordConnect.doStartEngine, fordConnect.checkStartEngine);
-    if (message !== 'Sent start vehicle command and got confirmation.') {
-      console.log(message);
-    }
+    console.log(message);
   }
 
   res.statusCode = 200;

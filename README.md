@@ -1,4 +1,30 @@
 # low-BAC
+This is an IoT project that helps ensure you have a low BAC (Blood Alcohol Content) reading before unlocking or starting your vehicle.  The idea is that this device would replace your key dongle.
+
+## How it works
+- The Arduino Nano 33 IoT runs the [low-bac.ino](./arduino/low-bac.ino) firmware which sends information to the Arudino Cloud.
+- The Arduino Cloud has a dashboard but it also is configured with a webhook to script.google.com that runs our [proxy.gs](./script.google.com/Proxy.gs)
+- The Proxy.gs file encodes the request and forwards it on to the ngrok server at https://jamisoncreations.ngrok.io/webhook
+- The ngrok server forward the request to http://localhost:8080/webhook
+- Our Node.js Express server is listening for requests on http://localhost:8080
+- When a request to localhost:8080 for webhook gets invoked we:
+  - Decode the body of the message
+  - Print out information about the request (webhook id, thing id, and a list of name, value, timestamps) to the console
+  - See if the _doorLocks_ variable is set to false (e.g. unlock).  If so:
+    - Send a POST request to unlock the door
+    - Send a GET request to get status of unlocking
+    - If the status is PENDINGRESPONSE then retry the GET call
+    - Print the response
+  - See if the _startVehicle_ variable is set to true (e.g. start the vehicle).  If so:
+    - Send a POST request to start the vehicle
+    - Send a GET request to get status of starting the vehicle
+    - If the status is PENDINGRESPONSE then retry the GET call
+    - Print the response
+
+
+
+## Wiring diagram
+<img src='./docs/wiring.png' />
 
 ## Node Server Setup
 This project requires you have [Node.js](https://nodejs.org/en/download/) and npm installed.  This version was developed and testing using Node version 15.5.1, npm 7.17.0 and Windows 10 (19042.1052).  You can check your versions by using the following command:
